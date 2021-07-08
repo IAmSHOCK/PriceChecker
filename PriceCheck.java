@@ -5,27 +5,16 @@ import java.net.*;
 
 public class PriceCheck{
 	public static void main(String[] argv) {
-		try{
+		try  {  
 			Desktop d = Desktop.getDesktop();
-			d.browse((new URL("www.google.com")).toURI());
-		}
-		catch(Exception e)
-		{
-			System.out.println(e);
-			System.out.println();
-			System.out.println();
+			File f = new File(argv[0]);    
+			if(f.exists())         //checks file exists or not  
+			d.open(f);              //opens the specified file  
+		}  
+		catch(Exception e) {  
 			e.printStackTrace();  
 		}
 	}
 }
+	
 		
-		/*try  {  
-		File f = new File(argv[0]);    
-		if(file.exists())         //checks file exists or not  
-		desktop.open(file);              //opens the specified file  
-		}  
-		catch(Exception e)  
-		{  
-		e.printStackTrace();  
-			}
-		}*/
