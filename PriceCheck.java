@@ -24,20 +24,35 @@ public class PriceCheck{
 
 	}
 	
-	private static String ProductPriceAmount(String s, Document doc){
+	private static String productPriceAmount(String s, Document doc){
 		Elements metaTags = doc.getElementsByTag("meta");
 
-
 		for (Element metaTag : metaTags) {
-		  	String content = metaTag.attr("property");
-		  	String name = metaTag.attr("content");
+		  	String property = metaTag.attr("property");
+		  	String price = metaTag.attr("content");
 
-		  	if("product:price:amount".equals(content)) {
-		    	return name;
-		    	break;
+		  	if("product:price:amount".equals(property)) {
+		    	return price;
 		  	}
 		}	
-		return;
+		return "";
+	}
+
+	private static String title(String s, Document doc){
+		Elements metaTags = doc.getElementsByTag("title");
+		return metaTags.text();
+	}
+
+	private static String spanStock(String s, Document doc){
+		Elements metaTags = doc.getElementsByTag("span");
+
+		for (Element metaTag : metaTags) {
+		  	String id = metaTag.attr("id");
+		  	if("product-availability".equals(id))
+		  		metaTag.attr("class", "");
+		  		System.out.println(metaTag.text());
+		}	
+		return "";
 	}
 
 	private static void jogonamesa(String s, Document doc){
@@ -83,6 +98,8 @@ public class PriceCheck{
   			URL u = new URL(s);
   			String host = u.getHost();
   			String price = "";
+  			String name = "";
+  			String stock = "";
   			switch (host){
   				case "kultgames":
   				kultgames(s,doc);
@@ -92,8 +109,10 @@ public class PriceCheck{
   				versusgamecenter(s,doc);
   				break;
 
-  				case "arenaporto.com": "gameplay.pt":
-  				price = ProductPriceAmount(s,doc);
+  				case "arenaporto.com": case "gameplay.pt":
+  				price = productPriceAmount(s,doc);
+  				name = title(s, doc);
+  				stock = spanStock(s,doc);
   				break;
 
   				case "jogonamesa":
