@@ -1,15 +1,14 @@
     //package com.javatpoint;  
     import java.net.*;  
     import java.io.*;  
+    import java.util.Scanner;
     public class UrlConnectionReader  
     {  
       public static void main(String[] args)  
       {  
         Scanner in = new Scanner(System.in);
-        String output;
         while(in.hasNext()){
-          output = getUrlContents(in.next);  
-          System.out.println(output);  
+          System.out.println(getUrlContents(in.next()));  
         }
       }  
       

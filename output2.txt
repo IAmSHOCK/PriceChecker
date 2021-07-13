@@ -1,0 +1,495 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Lost Ruins of Arnak</title>
+  <meta name="Description" content="boardgames, jogos, tabuleiro, cartas, eventos, jogar, barato, Lisboa">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+
+  <link rel="stylesheet" href="/css/jquery.mobile-1.4.5.min.css">
+  <link rel="shortcut icon" href="/img/favicon.ico">
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
+  <script src="/js/jquery.js"></script>
+  <script src="/js/vch.js"></script>
+  <script src="/js/jquery.mobile-1.4.5.min.js"></script>
+
+  <!--   MENU   -->
+  <!--FontAwesome-->
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+  <!--[if IE 7]>
+  <link rel="stylesheet" href="font-awesome/css/font-awesome-ie7.min.css">
+  <![endif]-->
+
+  <link href="/menu/ace-responsive-menu.css" rel="stylesheet" type="text/css" />
+  <script src="/menu/ace-responsive-menu.js" type="text/javascript"></script>
+  <script type="text/javascript"> $(document).ready(function () { $("#respMenu").aceResponsiveMenu({
+               resizeWidth: '768', // Set the same in Media query
+               animationSpeed: 'fast', //slow, medium, fast
+               accoridonExpAll: true //Expands all the accordion menu on click
+  }); }); </script>
+  <!--   \MENU   -->
+
+  <link href="/css/vch.css" rel="stylesheet" type="text/css" />
+  <link href="/css/tereso.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+
+<div data-role="page" class="page">
+
+  <div data-role="header">
+    <nav>
+        <div class="menu-toggle">
+          <a id="logo-mobile" href="home.cgi"><img src="/img/logo.png"></a>
+          <a class="mobile-menu-btn" id="menu-btn"><img src="/img/menu.svg"></a>
+          <a class="mobile-menu-btn" href="carro.cgi"><img src="/img/carrinho.svg"></a>
+          <a class="mobile-menu-btn" id="botao_pesquisa" href="#mypanel"><img src="/img/pesquisa.svg"></a>
+          <a class="mobile-menu-btn" href="user_wishlist.cgi"><img src="/img/wishlist.svg"></a>
+          <a class="mobile-menu-btn" href="mapa.cgi"><img src="/img/mapa.jpg"></a>
+        </div>
+        <ul id="respMenu" class="ace-responsive-menu" data-menu-style="horizontal">
+              <a id="logo" href="home.cgi"><img src="/img/logo.png"></a>
+            <li class="mobile-hide"> <a href="mapa.cgi"><img class="svg-icon" src="/img/mapa.jpg"><span>Recolha</span> </a> </li>
+            <li class="mobile-hide">
+                <a href="loja.cgi"><img class="svg-icon" src="/img/loja.svg"><span class="title">Loja</span> </a>
+                <ul>
+                    <li> <a href="search.cgi?modo=1">Todos em Stock</a> </li>
+                    <li> <a href="loja.cgi?tipo=familia">Recomendados</a> </li>
+                    <li> <a href="loja_sleeves.cgi">Protetores de Cartas</a> </li>
+                    <li> <a href="loja_comp.cgi">Componentes</a> </li>
+                    <li> <a href="encomendas.cgi">Encomendas</a> </li>
+                </ul>
+            </li>
+            <li class="mobile-hide"> <a href="user_wishlist.cgi"><img class="svg-icon" src="/img/wishlist.svg"><span>Wishlist</span> </a> </li>
+            
+               <li class="mobile-hide"> <a href="user_login.cgi"><img class="svg-icon" src="/img/login.svg"><span>Entrar</span> </a>
+               </li>
+            
+            <li class="mobile-hide">
+
+              <script type="text/javascript" charset="utf-8">
+                var fora = 1;
+                function resultado (qual) {
+                  var nova = $("#pesquisa"+qual).val();
+                  if (!nova || nova.length < 3) {
+                    $("#resultado"+qual).css("display", "none");
+                  } else {
+                    $("#resultado"+qual).show();
+                    $.post("search_small.cgi", { search: nova },
+                      function(data) { $("#resultado"+qual).html(data) },
+                      "html"
+                    );
+                  }
+                }
+               </script>
+
+               <!--mobile menu -->
+              <li class="desktop-hide"> <a href="loja.cgi"><img class="svg-icon" src="/img/loja.svg"><span>Loja</span></a></li>
+<!--
+                <li class="desktop-hide"> <a href="loja.cgi"><span class="submenu-title">BGG Top 1000</span></a></li>
+-->
+                <li class="desktop-hide"> <a href="search.cgi?modo=1"><span class="submenu-title">Todos em Stock</span></a></li>
+                <li class="desktop-hide"> <a href="loja.cgi?tipo=familia"><span class="submenu-title">Recomendados</span></a> </li>
+
+                <li class="desktop-hide"> <a href="loja_sleeves.cgi"><span class="submenu-title">Protetores de Cartas</span></a></li>
+                <li class="desktop-hide"> <a href="loja_comp.cgi"><span class="submenu-title">Componentes</span></a></li>
+                <li class="desktop-hide"> <a href="encomendas.cgi"><span class="submenu-title">Encomendas</span></a></li>
+<!--
+              <li class="desktop-hide"> <a href="user_wishlist.cgi"><img class="svg-icon" src="/img/wishlist.svg"><span>Wishlist</span> </a> </li>
+-->
+              
+                <li class="desktop-hide"> <a href="user_login.cgi"><img class="svg-icon" src="/img/conta.svg"><span>Entrar</span> </a></li>
+              
+              <li class="mobile-hide">
+               <form action="search.cgi" method=GET autocomplete="off">
+                 <!-- <a href="#mypanel"><img class="svg-icon" src="/img/pesquisa.svg"></a>-->
+                 <input id=pesquisa1 type=search name=search onkeyup="resultado(1)" onfocus="resultado(1)" onblur="if(fora) { $('#resultado1').hide() }" value="" placeholder="Nome do jogo" size=15>
+               </form>
+
+               <div style="position:relative"><div id=resultado1 onmouseover="fora=0" onmouseout="fora=1" style="text-align:left;z-index:9999;display:none; position: absolute; top: 0px; left: 0px; background: #FFFFFF; color: #333; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px">Introduz os termos a pesquisar</div></div>
+            </li>
+            <li class="mobile-hide">
+              <a href="carro.cgi"><img class="svg-icon" src="/img/carrinho.svg"></a>
+            </li>
+        </ul>
+    </nav>
+  </div>
+
+  <div data-role="ui-content" class="main">
+
+    
+<div class="ficha-cabecalho">
+  <div class="ficha-thumbnail">
+     <img src="/upload//z_image/93/33/50/00/460_0.jpg">
+    <br>
+    
+      <a class="botao botao-ficha-wishlist botao-secundario" href="user_wishlist_edit.cgi?bgg_id=312484"><img src="/img/wishlist_off.svg">Adicionar &agrave; Wishlist</a>
+    
+  </div>
+  <h2>
+    Lost Ruins of Arnak<a target="_blank" href="https://www.boardgamegeek.com/boardgame/312484" class="bgg">&nbsp;BGG&nbsp;</a>
+  </h2>
+  
+    <a class="botao botao-ficha-wishlist-mobile botao-secundario" href="user_wishlist_edit.cgi?bgg_id=312484"><img src="/img/wishlist_off.svg">Adicionar &agrave; Wishlist</a>
+  
+
+  
+    <div class="ficha-compra">
+      <!--  lista do stock -->
+      
+        <a class="segmento " id="preco_4736" onclick="rodar(4736)">&euro; 52.00</a>
+        <div id="escondido_4736" style="display: none;">
+          
+            <span class="caracteristica-titulo">Regras: </span>
+            <span class="capitalize"> &nbsp;<span style=""><img height=13 src="/img/lang/PT.jpg"></span>&nbsp; </span><br>
+          
+          <span class="caracteristica-titulo">Editora: </span>
+          <span class="capitalize">Devir</span><br>
+          <span class="caracteristica-titulo">Entrega: </span>
+          <span class="entrega">imediata</span><br>
+          <div><span class="caracteristica-titulo">Detalhes: </span><a class="tooltip" href="#ppu7255" data-rel="popup" data-transition="fade">&nbsp;&nbsp;?&nbsp;&nbsp;</a><div data-role="popup" id="ppu7255" style="padding:10px"> <b>Editora</b>:&nbsp;Devir<br><b>Fornecedor</b>: stock<br></div></div>
+          <a href="carro.cgi?BT_COMPRAR=1&stock_id=4736" class="botao botao-cabecalho botao-comprar"><img src="/img/cart.svg">Adicionar ao Carrinho</a>
+
+          
+
+        </div>
+      
+
+      <!--  lista das encomendas -->
+      
+        
+          <a class="segmento segmento_backorder " id="preco_1218012"onclick="rodar(1218012)">&euro;50.39</a>
+        
+        <div id="escondido_1218012" style="display: none;">
+          
+            <span class="caracteristica-titulo">Regras: </span>
+            <span class="capitalize"> &nbsp;<span style=""><img height=13 src="/img/lang/EN.jpg"></span>&nbsp; </span><br>
+          
+          <span class="caracteristica-titulo">Editora: </span>
+          <span class="capitalize">czech games edition</span><br>
+          <span class="caracteristica-titulo">Entrega: </span><span class="esgotado">Esgotado</span><br>
+          <div><span class="caracteristica-titulo">Detalhes: </span><a class="tooltip" href="#ppu1042" data-rel="popup" data-transition="fade">&nbsp;&nbsp;?&nbsp;&nbsp;</a><div data-role="popup" id="ppu1042" style="padding:10px"> <b>Editora</b>:&nbsp;czech&nbsp;games&nbsp;edition<br><b>Fornecedor</b>: 1<br></div></div>
+          
+            <a href="user_resumo.cgi?BT_ORDER=1&item_id=1218012" class="botao botao-cabecalho botao-backorder2">Backorder</a> <br><em>Sem previs&atilde;o de entrega. </em>
+          
+
+          
+
+        </div>
+      
+        
+          <a class="segmento segmento_backorder " id="preco_1252907"onclick="rodar(1252907)">&euro;53.99</a>
+        
+        <div id="escondido_1252907" style="display: none;">
+          
+            <span class="caracteristica-titulo">Regras: </span>
+            <span class="capitalize"> &nbsp;<span style=""><img height=13 src="/img/lang/EN.jpg"></span>&nbsp; </span><br>
+          
+          <span class="caracteristica-titulo">Editora: </span>
+          <span class="capitalize">czech games edition</span><br>
+          <span class="caracteristica-titulo">Entrega: </span><span class="esgotado">Esgotado</span><br>
+          <div><span class="caracteristica-titulo">Detalhes: </span><a class="tooltip" href="#ppu4031" data-rel="popup" data-transition="fade">&nbsp;&nbsp;?&nbsp;&nbsp;</a><div data-role="popup" id="ppu4031" style="padding:10px"> <b>Editora</b>:&nbsp;czech&nbsp;games&nbsp;edition<br><b>Fornecedor</b>: 5<br></div></div>
+          
+            <a href="user_resumo.cgi?BT_ORDER=1&item_id=1252907" class="botao botao-cabecalho botao-backorder2">Backorder</a> <br><em>Sem previs&atilde;o de entrega. </em>
+          
+
+          
+
+        </div>
+      
+
+      <script type="text/javascript">
+        var preco_old;
+        function rodar (numero) {
+          $("#preco_"+preco_old).removeClass('segmento_activo');
+          $("#preco_"+numero).addClass('segmento_activo');
+          $("#comprar_visivel").html( $('#escondido_'+numero).html() );
+          preco_old = numero;
+        };
+        $(document).ready( function(){
+          preco_old = 4736;
+          rodar( 4736 );
+        });
+      </script>
+      <br><br>
+      <div id="comprar_visivel"></div>
+    </div>
+  
+</div>
+
+<div class="ficha-corpo">
+  <div class="ficha-descricao">
+    <p>On an uninhabited island in uncharted seas, explorers have found traces of a great civilization. Now you will lead an expedition to explore the island, find lost artifacts, and face fearsome guardians, all in a quest to learn the island's secrets.<br/><br/>Lost Ruins of Arnak combines deck-building and worker placement in a game of exploration, resource management, and discovery. In addition to traditional deck-builder effects, cards can also be used to place workers, and new worker actions become available as players explore the island. Some of these actions require resources instead of worke <a href="https://www.boardgamegeek.com/boardgame/312484">...</a></p>
+    
+    
+      <h3>Este jogo tem <a href="search.cgi?bgg_id=338841,341254">2 fichas de expans&atilde;o</a></h3>
+    
+  </div>
+  <div class="ficha-caracteristicas">
+    <div id="ficha-caracteristicas-coluna1">
+      <span class="svg-icon"><img src="/img/jogadores.svg"></span>
+      <span class="caracteristica-titulo">Jogadores</span>
+      <div class="caracteristica"> 1  - 4 </div> <br>
+
+      <span class="svg-icon"><img src="/img/duracao.svg"></span>
+      <span class="caracteristica-titulo">Duração</span>
+      <div class="caracteristica">30  - 120  min </div><br>
+
+      
+        <span class="svg-icon"><img src="/img/rank.svg"></span>
+        <span class="caracteristica-titulo">Rank</span>
+        <div class="caracteristica"><a target="_blank" href="https://www.boardgamegeek.com/boardgame/312484">65</a></div><br>
+      
+
+      
+        <span class="svg-icon"><img src="/img/ano.svg"></span>
+        <span class="caracteristica-titulo">Ano</span>
+        <div class="caracteristica">2020</div>
+      
+    </div>
+
+    <div id="ficha-caracteristicas-coluna2">
+      
+        <span class="svg-icon"><img src="/img/autor.svg"></span>
+        <span class="caracteristica-titulo">Designer</span>
+        <div class="caracteristica">Elwen , Mín</div><br>
+      
+
+      
+        <span class="svg-icon"><img src="/img/artista.svg"></span>
+        <span class="caracteristica-titulo">Artista</span>
+        <div class="caracteristica">Jiří Kůs, Ondřej Hrdina , Jakub Politzer , František Sedláček , Milan Vavroň</div><br>
+      
+
+      
+        <span class="svg-icon"><img src="/img/alias.svg"></span>
+        <span class="caracteristica-titulo">Alias</span>
+        <div class="caracteristica">Las Ruinas Perdidas de Arnak, Les Ruines Perdues de Narak , Die verlorenen Ruinen von Arnak , Le Rovine Perdu <a href="https://www.boardgamegeek.com/boardgame/312484">...</a></div><br>
+      
+
+      
+
+      
+        <span class="svg-icon"><img src="/img/deplingua.svg"></span>
+        <span class="caracteristica-titulo">Depend&ecirc;ncia de língua <small>(verificada por n&oacute;s)</small></span>
+        <div class="caracteristica">Pouca Ajuda</div><br>
+      
+
+    </div>
+  </div>
+</div>
+
+
+  <h2 class="cabecalho">Encomendas de extras e expans&otilde;es</h2>
+  <table cellpadding=2 cellspacing=3 border=0>
+
+<tr style="background-color:#F9EFE2" height="50px">
+  <td>lost ruins of arnak: expedition leaders [expansion]</td>
+  <td>czech games edition</td>
+  <td style="max-width:90px">
+     &nbsp;<span style=""><img height=13 src="/img/lang/EN.jpg"></span>&nbsp; 
+        
+  </td>
+  <td width=250>
+    <a target=_blank href="ficha.cgi?bgg_id=341254">Lost Ruins of Arnak: Expedition Leaders</a> &nbsp; (341254)
+    
+  </td>
+  <td style="width:180px">
+    
+        <a target=_blank href="user_resumo.cgi?BT_ORDER=1&item_id=1261687" class="botao botao-backorder2"><img src="/img/reserva.svg">Backorder &nbsp;&euro;26.87</a>
+        
+        </td> <td>
+        <span class="wishlist_texto_entrega"><em>Sem&nbsp;previs&atilde;o</em></span>
+    
+  </td>
+</tr>
+
+<tr  height="50px">
+  <td>lost ruins of arnak insert</td>
+  <td>folded space</td>
+  <td style="max-width:90px">
+    
+        
+  </td>
+  <td width=250>
+    
+      Expansao &nbsp;
+       de <a target=_blank href="ficha.cgi?bgg_id=312484">312484</a> &nbsp; 
+      <a target=_blank href="https://www.google.com/search?q=lost%20ruins%20of%20arnak%20insert%20folded%20space"><img src="/img/google.png" width="24px"></a>
+    
+  </td>
+  <td style="width:180px">
+    
+        <a target=_blank href="user_resumo.cgi?BT_ORDER=1&item_id=1247054" class="botao botao-backorder"><img src="/img/cart.svg">Encomendar &nbsp;&euro;18.91</a>&nbsp;
+        
+        </td> <td>
+        <span class="wishlist_texto_entrega"><span class="reserva">35 dias</span></span>
+    
+  </td>
+</tr>
+
+<tr style="background-color:#F9EFE2" height="50px">
+  <td>e-raptor insert lost ruins of arnak</td>
+  <td>e-raptor</td>
+  <td style="max-width:90px">
+    
+        
+  </td>
+  <td width=250>
+    
+      Expansao &nbsp;
+       de <a target=_blank href="ficha.cgi?bgg_id=312484">312484</a> &nbsp; 
+      <a target=_blank href="https://www.google.com/search?q=e-raptor%20insert%20lost%20ruins%20of%20arnak%20e-raptor"><img src="/img/google.png" width="24px"></a>
+    
+  </td>
+  <td style="width:180px">
+    
+        <a target=_blank href="user_resumo.cgi?BT_ORDER=1&item_id=1252757" class="botao botao-backorder2"><img src="/img/reserva.svg">Backorder &nbsp;&euro;24.70</a>
+        
+        </td> <td>
+        <span class="wishlist_texto_entrega"><em>Sem&nbsp;previs&atilde;o</em></span>
+    
+  </td>
+</tr>
+
+<tr  height="50px">
+  <td>insert: lost ruins of arnak</td>
+  <td>e-raptor</td>
+  <td style="max-width:90px">
+     &nbsp;<span style=""><img height=13 src="/img/lang/EN.jpg"></span>&nbsp; 
+        
+  </td>
+  <td width=250>
+    
+      Expansao &nbsp;
+       de <a target=_blank href="ficha.cgi?bgg_id=312484">312484</a> &nbsp; 
+      <a target=_blank href="https://www.google.com/search?q=insert:%20lost%20ruins%20of%20arnak%20e-raptor"><img src="/img/google.png" width="24px"></a>
+    
+  </td>
+  <td style="width:180px">
+    
+        <a target=_blank href="user_resumo.cgi?BT_ORDER=1&item_id=1231179" class="botao botao-backorder2"><img src="/img/reserva.svg">Backorder &nbsp;&euro;24.84</a>
+        
+        </td> <td>
+        <span class="wishlist_texto_entrega"><em>Sem&nbsp;previs&atilde;o</em></span>
+    
+  </td>
+</tr>
+
+<tr style="background-color:#F9EFE2" height="50px">
+  <td>e-raptor insert lost ruins of arnak uv print</td>
+  <td>e-raptor</td>
+  <td style="max-width:90px">
+    
+        
+  </td>
+  <td width=250>
+    
+      Expansao &nbsp;
+       de <a target=_blank href="ficha.cgi?bgg_id=312484">312484</a> &nbsp; 
+      <a target=_blank href="https://www.google.com/search?q=e-raptor%20insert%20lost%20ruins%20of%20arnak%20uv%20print%20e-raptor"><img src="/img/google.png" width="24px"></a>
+    
+  </td>
+  <td style="width:180px">
+    
+        <a target=_blank href="user_resumo.cgi?BT_ORDER=1&item_id=1258699" class="botao botao-backorder"><img src="/img/cart.svg">Encomendar &nbsp;&euro;29.57</a>&nbsp;
+        
+        </td> <td>
+        <span class="wishlist_texto_entrega"><span class="reserva">35 dias</span></span>
+    
+  </td>
+</tr>
+
+</table>
+
+
+
+
+
+  </div>
+
+  <div id="footer" data-role="footer">
+    <ul>
+      <li>
+        Eventos Regulares<br><br>
+      </li>
+      <li>
+        <a href="evento_local.cgi?local_id=12">Alcaf&eacute;, Estef&acirc;nia</a>
+      </li>
+      <li>
+        <a href="evento_local.cgi?local_id=14">Pal&aacute;cio do Egipto, Oeiras</a>
+      </li>
+      <li>
+        <a href="evento_local.cgi?local_id=21">Mercearia Elite, S. Pedro Estoril</a>
+      </li>
+      <li>
+        <a href="evento_local.cgi?local_id=25">Joker, Laranjeiras</a>
+      </li>
+      <li>
+        <a href="evento_local.cgi?local_id=39">SMUP, Parede</a>
+      </li>
+    </ul>
+
+    <ul>
+      <li>
+        Eventos Personalizados<br><br>
+      </li>
+      <li>
+        <a href="evento.cgi">Como Funcionam</a>
+      </li>
+      <li>
+        <a href="evento.cgi?tipo=empresa">Empresas</a>
+      </li>
+      <li>
+        <a href="evento.cgi?tipo=escola">Escolas e A.T.Ls.</a>
+      </li>
+      <li>
+        <a href="evento.cgi?tipo=cafe">Caf&eacute;s e Restaurantes</a>
+      </li>
+      <li>
+        <a href="evento.cgi?tipo=espacos">Espa&ccedil;os P&uacute;blicos</a>
+      </li>
+    </ul>
+
+    <ul>
+      <li>
+        O Jogo na Mesa<br><br>
+      </li>
+     <li>
+        <a href="mapa.cgi">Ponto de Recolha</a>
+      </li>
+      <li>
+        <a href="sobre_nos.cgi">Sobre N&oacute;s</a>
+      </li>
+      <li>
+        <a href="faq.cgi">F.A.Q.</a>
+      </li>
+      <li>
+        <a href="newsletter.cgi">Newsletter</a>
+      </li>
+      <li>
+        <a href="privacidade.cgi">Privacidade</a>
+      </li>
+    </ul>
+
+    <a href="https://www.facebook.com/jogonamesa" target=_blank class="footer-button"><img src="/img/fb-icon.svg"></a>
+  </div>
+
+  <div data-role="panel" id="mypanel" data-display="overlay" data-position="right" data-position-fixed="true">
+
+    <script type="text/javascript"> $(document).ready(function () {
+      $( "#mypanel" ).panel({ open: function( event, ui ) { $('#pesquisa2').focus() } });
+    }); </script>
+
+     <form action="search.cgi" method=GET autocomplete="off">
+       <input id=pesquisa2 onkeyup="resultado(2)" type=search name=search value="" placeholder="">
+       <div id=resultado2><span style="margin-left:8px">Introduz os termos a pesquisar</span></div>
+     </form>
+
+  </div><!-- /panel -->
+
+</div><!-- /page -->
+</body>
+</html>
+
