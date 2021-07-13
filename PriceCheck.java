@@ -27,19 +27,18 @@ public class PriceCheck{
 	private static String ProductPriceAmount(String s, Document doc){
 		Elements metaTags = doc.getElementsByTag("meta");
 
-		String price = "";
 
 		for (Element metaTag : metaTags) {
-		  String content = metaTag.attr("property");
-		  String name = metaTag.attr("content");
+		  	String content = metaTag.attr("property");
+		  	String name = metaTag.attr("content");
 
-		  if("product:price:amount".equals(content)) {
-		    price = name;
-		    break;
-		  }
-		}
-		return price;
-		}
+		  	if("product:price:amount".equals(content)) {
+		    	return name;
+		    	break;
+		  	}
+		}	
+		return;
+	}
 
 	private static void jogonamesa(String s, Document doc){
 
