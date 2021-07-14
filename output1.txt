@@ -536,7 +536,7 @@
 
     
       <span id="product-availability">
-                              <i class="material-icons product-last-items">&#xE002;</i>
+        <i class="material-icons product-last-items">&#xE002;</i>
                     Últimos artigos em stock
               </span>
     

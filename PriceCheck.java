@@ -48,12 +48,27 @@ public class PriceCheck{
 
 		for (Element metaTag : metaTags) {
 		  	String id = metaTag.attr("id");
-		  	if("product-availability".equals(id))
-		  		metaTag.attr("class", "");
-		  		System.out.println(metaTag.text());
+		  	if("product-availability".equals(id)){
+		  		metaTag.children().remove();
+		  		return(metaTag.text());
+		  	}
 		}	
 		return "";
 	}
+
+	private static String pStock(String s, Document doc){
+		Elements metaTags = doc.getElementsByTag("p");
+
+		for (Element metaTag : metaTags) {
+		  	String id = metaTag.attr("id");
+		  	if("product-availability".equals(id)){
+		  		metaTag.children().remove();
+		  		return(metaTag.text());
+		  	}
+		}	
+		return "";
+	}	
+		
 
 	private static void jogonamesa(String s, Document doc){
 
@@ -109,10 +124,15 @@ public class PriceCheck{
   				versusgamecenter(s,doc);
   				break;
 
-  				case "arenaporto.com": case "gameplay.pt":
-  				price = productPriceAmount(s,doc);
-  				name = title(s, doc);
-  				stock = spanStock(s,doc);
+  				case "arenaporto.com":
+  					price = productPriceAmount(s,doc);
+  					name = title(s, doc);
+  					stock = spanStock(s,doc);
+  					break;
+  				case "gameplay.pt":
+  					price = productPriceAmount(s,doc);
+  					name = title(s, doc);
+  					stock = pStock(s,doc);
   				break;
 
   				case "jogonamesa":
