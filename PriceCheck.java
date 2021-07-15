@@ -9,6 +9,20 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+class BoardGame{
+	public String name;
+	public String site;
+	public String stock;
+	public int price;
+
+	public BoardGame(String a, String b, String c, int n){
+		name = a;
+		site = b;
+		stock = c;
+		price = n;
+	}
+}
+
 public class PriceCheck{
 
 	private static void kultgames(String s, Document doc){
@@ -17,10 +31,6 @@ public class PriceCheck{
 	}
 
 	private static void versusgamecenter(String s, Document doc){
-
-	}
-	
-	private static void gameplay(String s, Document doc){
 
 	}
 	
@@ -116,11 +126,11 @@ public class PriceCheck{
   			String name = "";
   			String stock = "";
   			switch (host){
-  				case "kultgames":
+  				case "kultgames.pt":
   				kultgames(s,doc);
   				break;
 
-  				case "versusgamecenter":
+  				case "versusgamecenter.pt":
   				versusgamecenter(s,doc);
   				break;
 
@@ -128,42 +138,44 @@ public class PriceCheck{
   					price = productPriceAmount(s,doc);
   					name = title(s, doc);
   					stock = spanStock(s,doc);
+  					//checar isto BoardGame b = new BoardGame(name, host, stock, price);
   					break;
+
   				case "gameplay.pt":
   					price = productPriceAmount(s,doc);
   					name = title(s, doc);
   					stock = pStock(s,doc);
   				break;
 
-  				case "jogonamesa":
+  				case "jogonamesa.pt":
   				jogonamesa(s,doc);
   				break;
 
-  				case "dracotienda":
+  				case "dracotienda.com":
   				dracotienda(s,doc);
   				break;
 
-  				case "cultodacaixa":
+  				case "cultodacaixa.pt":
   				cultodacaixa(s,doc);
   				break;
 
-  				case "gglounge":
+  				case "gglounge.pt":
   				gglounge(s,doc);
   				break;
 
-  				case "diver":
+  				case "diver.pt":
   				diver(s,doc);
   				break;
 
-  				case "juegosdelamesaredonda":
+  				case "juegosdelamesaredonda.com":
   				juegosdelamesaredonda(s,doc);
   				break;
 
-  				case "planetongames":
+  				case "planetongames.com":
   				planetongames(s,doc);
   				break;
 
-  				case "amazon":
+  				case "amazon.es":
   				amazon(s,doc);
   				break;
 
