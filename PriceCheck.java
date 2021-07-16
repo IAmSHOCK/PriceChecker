@@ -25,14 +25,59 @@ class BoardGame{
 
 public class PriceCheck{
 
-	private static void kultgames(String s, Document doc){
-		
-
+	private static Boolean checkNameBg(String s){
+		if(s.charAt(0) == 'h' && s.charAt(2) == 't' && s.charAt(2) == 't') return false;
+		return true;
 	}
 
-	private static void versusgamecenter(String s, Document doc){
+	private static String kultgamesPrice(String s, Document doc){
+		Elements metaTags = doc.getElementsByTag("span");
 
+		for (Element metaTag : metaTags) {
+		  	String id = metaTag.attr("id");
+		  	if("our_price_display".equals(id)){
+		  		//metaTag.children().remove();
+		  		return(metaTag.text().substring(0, metaTag.text().length() - 2));
+		  	}
+		}	
+		return "";	
 	}
+	private static String kultgamesStock(String s, Document doc){
+		Elements metaTags = doc.getElementsByTag("span");
+		for (Element metaTag : metaTags) {
+		  	String id = metaTag.attr("id");
+		  	if("availability_value".equals(id)){
+		  		metaTag.children().remove();
+		  		return (metaTag.text());
+		  	}
+		}	
+		return "";
+	}
+
+
+	private static String versusgamecenterPrice(String s, Document doc){
+		Elements metaTags = doc.getElementsByTag("span");
+		for (Element metaTag : metaTags) {
+		  	String id = metaTag.attr("id");
+		  	if("price-old".equals(id)){
+		  		metaTag.children().remove();
+		  		return(metaTag.text().substring(0, metaTag.text().length() - 1));
+		  	}
+		}	
+		return "";
+	}
+
+	private static String versusgamecenterStock(String s, Document doc){
+		Elements metaTags = doc.getElementsByTag("div");
+		for (Element metaTag : metaTags) {
+			String id = metaTag.attr("class");
+			if("description".equals(id)){
+		  		return(metaTag.text().substring(metaTag.text().indexOf("Disponibilidade: ")+17, metaTag.text().length()));
+			}
+		}	
+		return "";
+	}
+
 	
 	private static String productPriceAmount(String s, Document doc){
 		Elements metaTags = doc.getElementsByTag("meta");
@@ -48,14 +93,9 @@ public class PriceCheck{
 		return "";
 	}
 
-	private static String title(String s, Document doc){
-		Elements metaTags = doc.getElementsByTag("title");
-		return metaTags.text();
-	}
 
 	private static String spanStock(String s, Document doc){
 		Elements metaTags = doc.getElementsByTag("span");
-
 		for (Element metaTag : metaTags) {
 		  	String id = metaTag.attr("id");
 		  	if("product-availability".equals(id)){
@@ -68,11 +108,12 @@ public class PriceCheck{
 
 	private static String pStock(String s, Document doc){
 		Elements metaTags = doc.getElementsByTag("p");
-
+		String price;
 		for (Element metaTag : metaTags) {
 		  	String id = metaTag.attr("id");
 		  	if("product-availability".equals(id)){
 		  		metaTag.children().remove();
+
 		  		return(metaTag.text());
 		  	}
 		}	
@@ -118,70 +159,76 @@ public class PriceCheck{
 		f.setReadOnly();
 		BufferedReader in = new BufferedReader(new FileReader(f));
 		String s;
+		String name;
   		while ((s = in.readLine()) != null){
-			Document doc = Jsoup.connect(s).get();
-  			URL u = new URL(s);
-  			String host = u.getHost();
-  			String price = "";
-  			String name = "";
-  			String stock = "";
-  			switch (host){
-  				case "kultgames.pt":
-  				kultgames(s,doc);
-  				break;
+  			if(checkNameBg(s)){
+  				name = s; 
+  			}  
+  			else{
+  				Document doc = Jsoup.connect(s).get();
+	  			URL u = new URL(s);
+	  			String host = u.getHost();
+	  			String price = "";
+	  			String stock = "";
+	  			switch (host){
+	  				case "www.kultgames.pt":
+	  				price = kultgamesPrice(s, doc);
+	  				stock = kultgamesStock(s, doc);
+	  				break;
 
-  				case "versusgamecenter.pt":
-  				versusgamecenter(s,doc);
-  				break;
+	  				case "versusgamecenter.pt":
+	  				price = versusgamecenterPrice(s, doc);
+	  				stock = versusgamecenterStock(s, doc);
+	  				break;
 
-  				case "arenaporto.com":
-  					price = productPriceAmount(s,doc);
-  					name = title(s, doc);
-  					stock = spanStock(s,doc);
-  					//checar isto BoardGame b = new BoardGame(name, host, stock, price);
-  					break;
+	  				case "arenaporto.com":
+	  					price = productPriceAmount(s,doc);
+	  					stock = spanStock(s,doc);
+	  					//checar isto BoardGame b = new BoardGame(name, host, stock, price);
+	  					break;
 
-  				case "gameplay.pt":
-  					price = productPriceAmount(s,doc);
-  					name = title(s, doc);
-  					stock = pStock(s,doc);
-  				break;
+	  				case "gameplay.pt":
+	  					price = productPriceAmount(s,doc);
+	  					stock = pStock(s,doc);
+	  				break;
 
-  				case "jogonamesa.pt":
-  				jogonamesa(s,doc);
-  				break;
+	  				case "jogonamesa.pt":
+	  				jogonamesa(s,doc);
+	  				break;
 
-  				case "dracotienda.com":
-  				dracotienda(s,doc);
-  				break;
+	  				case "dracotienda.com":
+	  				dracotienda(s,doc);
+	  				break;
 
-  				case "cultodacaixa.pt":
-  				cultodacaixa(s,doc);
-  				break;
+	  				case "cultodacaixa.pt":
+	  				cultodacaixa(s,doc);
+	  				break;
 
-  				case "gglounge.pt":
-  				gglounge(s,doc);
-  				break;
+	  				case "gglounge.pt":
+	  				gglounge(s,doc);
+	  				break;
 
-  				case "diver.pt":
-  				diver(s,doc);
-  				break;
+	  				case "diver.pt":
+	  				diver(s,doc);
+	  				break;
 
-  				case "juegosdelamesaredonda.com":
-  				juegosdelamesaredonda(s,doc);
-  				break;
+	  				case "juegosdelamesaredonda.com":
+	  				juegosdelamesaredonda(s,doc);
+	  				break;
 
-  				case "planetongames.com":
-  				planetongames(s,doc);
-  				break;
+	  				case "planetongames.com":
+	  				planetongames(s,doc);
+	  				break;
 
-  				case "amazon.es":
-  				amazon(s,doc);
-  				break;
+	  				case "amazon.es":
+	  				amazon(s,doc);
+	  				break;
 
-  				default:
-  				System.out.println(s + " is invalid.");
+	  				default:
+	  				System.out.println(s + " is invalid.");
+	  			}
   			}
+			
   		}
 	}
 }
