@@ -30,7 +30,7 @@ public class PriceCheck{
 		return true;
 	}
 
-	private static String kultgamesPrice(String s, Document doc){
+	private static String spanIdPrice(String s, Document doc){
 		Elements metaTags = doc.getElementsByTag("span");
 
 		for (Element metaTag : metaTags) {
@@ -106,14 +106,13 @@ public class PriceCheck{
 		return "";
 	}
 
-	private static String pStock(String s, Document doc){
+	private static String pIdStock(String s, Document doc){
 		Elements metaTags = doc.getElementsByTag("p");
 		String price;
 		for (Element metaTag : metaTags) {
 		  	String id = metaTag.attr("id");
 		  	if("product-availability".equals(id)){
 		  		metaTag.children().remove();
-
 		  		return(metaTag.text());
 		  	}
 		}	
@@ -125,32 +124,102 @@ public class PriceCheck{
 
 	}
 	
-	private static void dracotienda(String s, Document doc){
+	private static String dracotiendaPrice(String s, Document doc){
+		Elements metaTags = doc.getElementsByTag("div");
+		for (Element metaTag : metaTags) {
+			String id = metaTag.attr("class");
+			String price = metaTag.attr("content");
+			if("current-price".equals(id)){
+		  		return(metaTag.text().substring(0, metaTag.text().length() - 2));
+			}
+		}	
+		return "";
+	}
 
+	private static String dracotiendaStock(String s, Document doc){
+		Elements metaTags = doc.getElementsByTag("span");
+		for (Element metaTag : metaTags) {
+			String id = metaTag.attr("class");
+			if("product-availability".equals(id)){
+		  		return(metaTag.text().substring(metaTag.text().indexOf("Disponibilidad: ")+18, metaTag.text().length()));
+			}
+		}	
+		return "";
 	}
 	
-	private static void cultodacaixa(String s, Document doc){
+	private static String pPrice(String s, Document doc){
+		Elements metaTags = doc.getElementsByTag("p");
+		for (Element metaTag : metaTags) {
+		  	String id = metaTag.attr("class");
+		  	if("price".equals(id)){
+		  		//metaTag.children().remove();
+		  		return(metaTag.text().substring(1, metaTag.text().length()));
+		  	}
+		}
+		return "";
+	}
 
+	private static String pClassStock(String s, Document doc){
+		Elements metaTags = doc.getElementsByTag("p");
+		for (Element metaTag : metaTags) {
+		  	String id = metaTag.attr("class");
+		  	if("stock in-stock".equals(id)){
+		  		return(metaTag.text());
+		  	}
+		}
+
+		for (Element metaTag : metaTags) {
+		  	String id = metaTag.attr("class");
+		  	if("stock out-of-stock".equals(id)){
+		  		return(metaTag.text());
+		  	}
+		}	
+
+		for (Element metaTag : metaTags) {
+		  	String id = metaTag.attr("class");
+		  	if("stock available-on-backorder".equals(id)){
+		  		return(metaTag.text());
+		  	}
+		}
+		return "";
 	}
 	
-	private static void gglounge(String s, Document doc){
-
-	}
 	
-	private static void diver(String s, Document doc){
-
+	private static String diverPrice(String s, Document doc){
+		Elements metaTags = doc.getElementsByTag("p");
+		for (Element metaTag : metaTags) {
+			String id = metaTag.attr("class");
+			//String price = metaTag.attr("content");
+			if("our_price_display".equals(id)){
+		  		return(metaTag.text().substring(0, metaTag.text().length()-2));
+			}
+		}	
+		return "";
 	}
-	
-	private static void juegosdelamesaredonda(String s, Document doc){
-
+	private static String spanIdStock(String s, Document doc){
+		Elements metaTags = doc.getElementsByTag("span");
+		String price;
+		for (Element metaTag : metaTags) {
+		  	String id = metaTag.attr("id");
+		  	if("availability_value".equals(id)){
+		  		return(metaTag.text());
+		  	}
+		}	
+		return "";
 	}
-	
-	private static void planetongames(String s, Document doc){
 
-	}
+	private static String keepaPrice(String s, Document doc){
+		Elements metaTags = doc.getElementsByTag("span");
+		for (Element metaTag : metaTags) {
+		  	String id = metaTag.attr("class");
+		  	System.out.println(metaTag);
+		  	System.out.println("here");
 
-	private static void amazon(String s, Document doc){
-
+		  	if("productTableDescriptionPrice priceNew".equals(id)){
+		  		return (metaTag.children().text());
+		  	}
+		}	
+		return "";
 	}
 	
 
@@ -172,7 +241,7 @@ public class PriceCheck{
 	  			String stock = "";
 	  			switch (host){
 	  				case "www.kultgames.pt":
-	  				price = kultgamesPrice(s, doc);
+	  				price = spanIdPrice(s, doc);
 	  				stock = kultgamesStock(s, doc);
 	  				break;
 
@@ -189,43 +258,51 @@ public class PriceCheck{
 
 	  				case "gameplay.pt":
 	  					price = productPriceAmount(s,doc);
-	  					stock = pStock(s,doc);
+	  					stock = pIdStock(s,doc);
 	  				break;
 
 	  				case "jogonamesa.pt":
-	  				jogonamesa(s,doc);
+	  					jogonamesa(s,doc);
 	  				break;
 
 	  				case "dracotienda.com":
-	  				dracotienda(s,doc);
+	  					price = dracotiendaPrice(s,doc);
+	  					stock = dracotiendaStock(s,doc);
 	  				break;
 
 	  				case "cultodacaixa.pt":
-	  				cultodacaixa(s,doc);
+	  					price = pPrice(s,doc);
+	  					stock = pClassStock(s,doc);
 	  				break;
 
 	  				case "gglounge.pt":
-	  				gglounge(s,doc);
+	  					price = pPrice(s,doc);
+	  					stock = pClassStock(s,doc);
 	  				break;
 
-	  				case "diver.pt":
-	  				diver(s,doc);
+	  				case "www.diver.pt":
+	  					price = diverPrice(s,doc);
+	  					stock = spanIdStock(s,doc);
+	  					System.out.println(stock);
 	  				break;
 
 	  				case "juegosdelamesaredonda.com":
-	  				juegosdelamesaredonda(s,doc);
+	  					price = spanIdPrice(s,doc);
+	  					stock = spanIdStock(s, doc);
 	  				break;
 
-	  				case "planetongames.com":
-	  				planetongames(s,doc);
+	  				case "www.planetongames.com":
+	  					price = spanIdPrice(s,doc);
+	  					stock = spanIdStock(s, doc);
 	  				break;
 
-	  				case "amazon.es":
-	  				amazon(s,doc);
+	  				case "keepa.com":
+	  					price = keepaPrice(s,doc);
+	  					System.out.println(price);
 	  				break;
 
 	  				default:
-	  				System.out.println(s + " is invalid.");
+	  					System.out.println(s + " is invalid.");
 	  			}
   			}
 			
