@@ -40,7 +40,7 @@ public class PriceCheck{
 		  		return(metaTag.text().substring(0, metaTag.text().length() - 2));
 		  	}
 		}	
-		return "";	
+		return "Not found.";	
 	}
 	private static String kultgamesStock(String s, Document doc){
 		Elements metaTags = doc.getElementsByTag("span");
@@ -51,7 +51,7 @@ public class PriceCheck{
 		  		return (metaTag.text());
 		  	}
 		}	
-		return "";
+		return "Not found.";
 	}
 
 
@@ -64,7 +64,7 @@ public class PriceCheck{
 		  		return(metaTag.text().substring(0, metaTag.text().length() - 1));
 		  	}
 		}	
-		return "";
+		return "Not found.";
 	}
 
 	private static String versusgamecenterStock(String s, Document doc){
@@ -75,7 +75,7 @@ public class PriceCheck{
 		  		return(metaTag.text().substring(metaTag.text().indexOf("Disponibilidade: ")+17, metaTag.text().length()));
 			}
 		}	
-		return "";
+		return "Not found.";
 	}
 
 	
@@ -90,7 +90,7 @@ public class PriceCheck{
 		    	return price;
 		  	}
 		}	
-		return "";
+		return "Not found.";
 	}
 
 
@@ -103,7 +103,7 @@ public class PriceCheck{
 		  		return(metaTag.text());
 		  	}
 		}	
-		return "";
+		return "Not found.";
 	}
 
 	private static String pIdStock(String s, Document doc){
@@ -116,7 +116,7 @@ public class PriceCheck{
 		  		return(metaTag.text());
 		  	}
 		}	
-		return "";
+		return "Not found.";
 	}	
 		
 
@@ -133,7 +133,7 @@ public class PriceCheck{
 		  		return(metaTag.text().substring(0, metaTag.text().length() - 2));
 			}
 		}	
-		return "";
+		return "Not found.";
 	}
 
 	private static String dracotiendaStock(String s, Document doc){
@@ -144,7 +144,7 @@ public class PriceCheck{
 		  		return(metaTag.text().substring(metaTag.text().indexOf("Disponibilidad: ")+18, metaTag.text().length()));
 			}
 		}	
-		return "";
+		return "Not found.";
 	}
 	
 	private static String pPrice(String s, Document doc){
@@ -156,7 +156,7 @@ public class PriceCheck{
 		  		return(metaTag.text().substring(1, metaTag.text().length()));
 		  	}
 		}
-		return "";
+		return "Not found.";
 	}
 
 	private static String pClassStock(String s, Document doc){
@@ -181,7 +181,7 @@ public class PriceCheck{
 		  		return(metaTag.text());
 		  	}
 		}
-		return "";
+		return "Not found.";
 	}
 	
 	
@@ -194,33 +194,51 @@ public class PriceCheck{
 		  		return(metaTag.text().substring(0, metaTag.text().length()-2));
 			}
 		}	
-		return "";
+		return "Not found.";
 	}
 	private static String spanIdStock(String s, Document doc){
 		Elements metaTags = doc.getElementsByTag("span");
 		String price;
 		for (Element metaTag : metaTags) {
 		  	String id = metaTag.attr("id");
-		  	if("availability_value".equals(id)){
+		  	if("price_inside_buybox".equals(id)){
 		  		return(metaTag.text());
 		  	}
 		}	
-		return "";
+		return "Not found.";
 	}
 
-	private static String keepaPrice(String s, Document doc){
+	private static String amazonPrice(String s, Document doc){
 		Elements metaTags = doc.getElementsByTag("span");
+		String price;
 		for (Element metaTag : metaTags) {
-		  	String id = metaTag.attr("class");
-		  	System.out.println(metaTag);
-		  	System.out.println("here");
-
-		  	if("productTableDescriptionPrice priceNew".equals(id)){
-		  		return (metaTag.children().text());
+		  	String id = metaTag.attr("id");
+		  	if("price_inside_buybox".equals(id)){
+			  	//System.out.println(metaTag);
+		  		return(metaTag.text().substring(0, metaTag.text().length()-2));
 		  	}
 		}	
-		return "";
+		return "Not found.";
 	}
+
+	private static String amazonStock(String s, Document doc){
+		Elements metaTags = doc.getElementsByTag("span");
+		String price;
+		for (Element metaTag : metaTags) {
+		  	String id = metaTag.attr("class");
+		  	if("a-size-medium a-color-success".equals(id)){
+			  	//System.out.println(metaTag);
+		  		return(metaTag.text());
+		  	}
+		}	
+		return "Not found.";
+	}
+
+	private static void toCSV(String name, String host, String price, String stock){
+
+	}
+
+
 	
 
 	public static void main(String[] argv) throws IOException{
@@ -229,83 +247,116 @@ public class PriceCheck{
 		BufferedReader in = new BufferedReader(new FileReader(f));
 		String s;
 		String name;
+		Double best = 5000.0;
   		while ((s = in.readLine()) != null){
   			if(checkNameBg(s)){
   				name = s; 
+  				best = 5000.0;
   			}  
   			else{
   				Document doc = Jsoup.connect(s).get();
 	  			URL u = new URL(s);
 	  			String host = u.getHost();
-	  			String price = "";
+	  			String priceS = "";
+	  			Double price = 0.0;
 	  			String stock = "";
 	  			switch (host){
 	  				case "www.kultgames.pt":
-	  				price = spanIdPrice(s, doc);
-	  				stock = kultgamesStock(s, doc);
+	  					priceS = spanIdPrice(s, doc);
+	  					priceS = priceS.replace(',','.');
+	  					price = Double.parseDouble(priceS);
+	  					stock = kultgamesStock(s, doc);
 	  				break;
 
-	  				case "versusgamecenter.pt":
-	  				price = versusgamecenterPrice(s, doc);
-	  				stock = versusgamecenterStock(s, doc);
+	  				case "www.versusgamecenter.pt":
+	  					priceS = versusgamecenterPrice(s, doc);
+	  					priceS = priceS.replace(',','.');
+	  					price = Double.parseDouble(priceS);
+	  					stock = versusgamecenterStock(s, doc);
 	  				break;
 
 	  				case "arenaporto.com":
-	  					price = productPriceAmount(s,doc);
+	  					priceS = productPriceAmount(s,doc);
+	  					price = Double.parseDouble(priceS);
 	  					stock = spanStock(s,doc);
 	  					//checar isto BoardGame b = new BoardGame(name, host, stock, price);
 	  					break;
 
 	  				case "gameplay.pt":
-	  					price = productPriceAmount(s,doc);
+	  					priceS = productPriceAmount(s,doc);
+	  					price = Double.parseDouble(priceS);
 	  					stock = pIdStock(s,doc);
 	  				break;
 
 	  				case "jogonamesa.pt":
-	  					jogonamesa(s,doc);
+	  					priceS = "not working";
+	  					stock = "not working";
+	  					price = 2000.0;
 	  				break;
 
 	  				case "dracotienda.com":
-	  					price = dracotiendaPrice(s,doc);
+	  					priceS = dracotiendaPrice(s,doc);
+	  					priceS = priceS.replace(',','.');
+	  					price = Double.parseDouble(priceS);
 	  					stock = dracotiendaStock(s,doc);
 	  				break;
 
 	  				case "cultodacaixa.pt":
-	  					price = pPrice(s,doc);
+	  					priceS = pPrice(s,doc);
+	  					priceS = priceS.replace(',','.');
+	  					price = Double.parseDouble(priceS);
 	  					stock = pClassStock(s,doc);
 	  				break;
 
 	  				case "gglounge.pt":
-	  					price = pPrice(s,doc);
+	  					priceS = pPrice(s,doc);
+	  					price = Double.parseDouble(priceS);
 	  					stock = pClassStock(s,doc);
 	  				break;
 
 	  				case "www.diver.pt":
-	  					price = diverPrice(s,doc);
+	  					priceS = diverPrice(s,doc);
+	  					priceS = priceS.replace(',','.');
+	  					price = Double.parseDouble(priceS);
 	  					stock = spanIdStock(s,doc);
-	  					System.out.println(stock);
 	  				break;
 
 	  				case "juegosdelamesaredonda.com":
-	  					price = spanIdPrice(s,doc);
+	  					priceS = spanIdPrice(s,doc);
+	  					priceS = priceS.replace(',','.');
+	  					price = Double.parseDouble(priceS);
 	  					stock = spanIdStock(s, doc);
 	  				break;
 
 	  				case "www.planetongames.com":
-	  					price = spanIdPrice(s,doc);
+	  					priceS = spanIdPrice(s,doc);
+	  					priceS = priceS.replace(',','.');
+	  					price = Double.parseDouble(priceS);
 	  					stock = spanIdStock(s, doc);
 	  				break;
 
-	  				case "keepa.com":
-	  					price = keepaPrice(s,doc);
-	  					System.out.println(price);
+	  				case "www.amazon.es":
+	  					priceS = amazonPrice(s,doc);
+	  					priceS = priceS.replace(',','.');
+	  					price = Double.parseDouble(priceS);
+	  					stock = amazonStock(s, doc);
 	  				break;
+
+	  				case "devir.pt":
+	  					priceS = "not implemented yet";
+	  					priceS = priceS.replace(',','.');
+	  					price = 2000.0;
+	  					//price = Double.parseDouble(priceS);
+	  					stock = "not implemented yet";
+	  					break;
 
 	  				default:
 	  					System.out.println(s + " is invalid.");
 	  			}
-  			}
-			
+	  			best = (price < best) ? price : best;
+	  			//toCSV(name, host, price, stock);
+  			}	
   		}
+  		System.out.println(best);
 	}
 }
