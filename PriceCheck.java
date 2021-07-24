@@ -120,8 +120,27 @@ public class PriceCheck{
 	}	
 		
 
-	private static void jogonamesa(String s, Document doc){
+	private static String jogonamesaPrice(String s, Document doc){
+		Elements metaTags = doc.getElementsByTag("div");
+		for (Element metaTag : metaTags) {
+			String id = metaTag.attr("class");
+			String price = metaTag.attr("content");
+			if("ficha-compra".equals(id)){
+		  		return(metaTag.text().substring(1, 6));
+			}
+		}	
+		return "Not found.";
+	}
 
+	private static String jogonamesaStock(String s, Document doc){
+		Elements metaTags = doc.getElementsByTag("span");
+		for (Element metaTag : metaTags) {
+			String id = metaTag.attr("class");
+			if("reserva".equals(id)){
+		  		return(metaTag.text());
+			}
+		}	
+		return "Not found.";
 	}
 	
 	private static String dracotiendaPrice(String s, Document doc){
@@ -201,7 +220,7 @@ public class PriceCheck{
 		String price;
 		for (Element metaTag : metaTags) {
 		  	String id = metaTag.attr("id");
-		  	if("price_inside_buybox".equals(id)){
+		  	if("availability_value".equals(id)){
 		  		return(metaTag.text());
 		  	}
 		}	
@@ -289,9 +308,10 @@ public class PriceCheck{
 	  				break;
 
 	  				case "jogonamesa.pt":
-	  					priceS = "not working";
-	  					stock = "not working";
-	  					price = 2000.0;
+	  					priceS = jogonamesaPrice(s, doc);
+	  					stock = jogonamesaStock(s, doc);
+	  					price = Double.parseDouble(priceS);
+	  					System.out.println(stock);
 	  				break;
 
 	  				case "dracotienda.com":
@@ -355,6 +375,10 @@ public class PriceCheck{
 	  			}
 	  			best = (price < best) ? price : best;
 	  			//toCSV(name, host, price, stock);
+	  			System.out.println(host);
+	  			System.out.println(price);
+	  			System.out.println(stock);
+	  			System.out.println();
   			}	
   		}
   		System.out.println(best);
