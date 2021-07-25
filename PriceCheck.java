@@ -136,16 +136,22 @@ public class PriceCheck{
 		  		return(metaTag.text());
 			}
 		}	
+		for (Element metaTag : metaTags) {
+			String id = metaTag.attr("class");
+			if("esgotado".equals(id)){
+		  		return(metaTag.text());
+			}
+		}	
+
 		return "Not found.";
 	}
 	
 	private static String dracotiendaPrice(String s, Document doc){
-		Elements metaTags = doc.getElementsByTag("div");
+		Elements metaTags = doc.getElementsByTag("span");
 		for (Element metaTag : metaTags) {
-			String id = metaTag.attr("class");
-			String price = metaTag.attr("content");
-			if("current-price".equals(id)){
-		  		return(metaTag.text().substring(0, metaTag.text().length() - 2));
+			String id = metaTag.attr("itemprop");
+			if("price".equals(id)){
+		  		return (metaTag.text().substring(0, metaTag.text().length()-2));
 			}
 		}	
 		return "Not found.";
@@ -168,6 +174,7 @@ public class PriceCheck{
 		  	String id = metaTag.attr("class");
 		  	if("price".equals(id)){
 		  		//metaTag.children().remove();
+		  		if(metaTag.text().equals("")) return "";
 		  		return(metaTag.text().substring(1, metaTag.text().length()));
 		  	}
 		}
@@ -259,11 +266,11 @@ public class PriceCheck{
 	private static void toData(String name, Double best, String bestHost, Double[] prices, String[] stocks){
 		String[] f = new String[ARRSIZE*2+3];
 		f[0] = name;
-		f[1] = String.valueOf(best);
+		f[1] = best == 5000.0 ? "0" : String.valueOf(best);
 		f[2] = bestHost;
 		int j = 0;
 		for (int i = 3; i < ARRSIZE*2+2; i+=2) {
-			f[i] = String.valueOf(prices[j]);
+			f[i] = prices[j] == 5000.0 ? "0" : String.valueOf(prices[j]);
 			f[i+1] = stocks[j];
 			j++;
 		}
@@ -288,13 +295,13 @@ public class PriceCheck{
 
 	public static void main(String[] argv) throws IOException{
 		File f = new File(argv[0]);
-		f.setReadOnly();
 		BufferedReader in = new BufferedReader(new FileReader(f));
 		String s;
 		String name = "";
 		String bestHost = "";
 		Double best = 5000.0;
 		Double[] prices = new Double[ARRSIZE];
+		Arrays.fill(prices, 5000.0);
 		String[] stocks = new String[ARRSIZE];
 		initData();
 
@@ -303,10 +310,13 @@ public class PriceCheck{
   				if(!(name.equals(""))){
   					toData(name, best, bestHost, prices, stocks);
   					prices = new Double[ARRSIZE];
+					Arrays.fill(prices, 5000.0);
 					stocks = new String[ARRSIZE];
   				}
+  				System.out.println(name);
   				name = s; 
   				best = 5000.0;	
+  				bestHost = "";
   			}  
   			else{
   				Document doc = Jsoup.connect(s).get();
@@ -327,7 +337,7 @@ public class PriceCheck{
 	  					priceS = versusgamecenterPrice(s, doc);
 	  					priceS = priceS.replace(',','.');
 	  					price = Double.parseDouble(priceS);
-	  					prices[1] = price;
+	  					prices[1] = prices[1] > price ? price : prices[1];
 	  					stocks[1] = versusgamecenterStock(s, doc);
 	  				break;
 
@@ -348,9 +358,17 @@ public class PriceCheck{
 
 	  				case "jogonamesa.pt":
 	  					priceS = jogonamesaPrice(s, doc);
-	  					stocks[4] = jogonamesaStock(s, doc);
-	  					price = Double.parseDouble(priceS);
-	  					prices[4] = prices[4] > price ? price : prices[4];
+	  					
+	  					if(priceS.equals("Not found.")){
+	  						prices[4] = 0;
+	  						stocks[4] = "esgotado";
+	  						price = 5000.0;
+	  					}
+	  					else{
+	  						price = Double.parseDouble(priceS);
+	  						prices[4] = prices[4] > price ? price : prices[4];
+	  						stocks[4] = jogonamesaStock(s, doc);
+	  					}
 	  				break;
 
 	  				case "dracotienda.com":
@@ -363,10 +381,17 @@ public class PriceCheck{
 
 	  				case "cultodacaixa.pt":
 	  					priceS = pPrice(s,doc);
-	  					priceS = priceS.replace(',','.');
-	  					price = Double.parseDouble(priceS);
-	  					prices[6] = prices[6] > price ? price : prices[6];
-	  					stocks[6] = pClassStock(s,doc);
+	  					if(priceS.equals("")){
+	  						prices[6] = 0;
+	  						stocks[6] = "esgotado";
+	  						price = 5000.0;
+	  					}
+	  					else{
+	  						priceS = priceS.replace(',','.');
+	  						price = Double.parseDouble(priceS);
+	  						prices[6] = prices[6] > price ? price : prices[6];
+	  						stocks[6] = pClassStock(s,doc);
+	  					}
 	  				break;
 
 	  				case "gglounge.pt":
@@ -403,9 +428,16 @@ public class PriceCheck{
 	  				case "www.amazon.es":
 	  					priceS = amazonPrice(s,doc);
 	  					priceS = priceS.replace(',','.');
-	  					price = Double.parseDouble(priceS);
-	  					prices[11] = prices[11] > price ? price : prices[11];
-	  					stocks[11] = amazonStock(s, doc);
+	  					if(priceS.equals("Not found.")){
+	  						prices[11] = 10000.0;
+	  						stocks[11] = "Not found.";
+	  						price = 10000.0;
+	  					}
+	  					else{
+	  						price = Double.parseDouble(priceS);
+	  						prices[11] = prices[11] > price ? price : prices[11];
+	  						stocks[11] = amazonStock(s, doc);
+	  					}
 	  				break;
 
 	  				case "devir.pt":
@@ -424,6 +456,7 @@ public class PriceCheck{
 	  				best = price;
 	  				bestHost = host;
 	  			}
+	  			System.out.println(price);
   			}	
   		}
   		toData(name, best, bestHost, prices, stocks);
