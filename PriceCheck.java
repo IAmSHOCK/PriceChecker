@@ -9,21 +9,17 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-class BoardGame{
-	public String name;
-	public String site;
-	public String stock;
-	public int price;
+import com.opencsv.CSVWriter;
+import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Arrays;
 
-	public BoardGame(String a, String b, String c, int n){
-		name = a;
-		site = b;
-		stock = c;
-		price = n;
-	}
-}
+
 
 public class PriceCheck{
+	public static int ARRSIZE = 13;
+	public static List<String[]> data;
 
 	private static Boolean checkNameBg(String s){
 		if(s.charAt(0) == 'h' && s.charAt(2) == 't' && s.charAt(2) == 't') return false;
@@ -252,9 +248,39 @@ public class PriceCheck{
 		}	
 		return "Not found.";
 	}
+	private static void initData(){
+		data = new ArrayList<String[]>();
+		data.add(new String[] {"", "", "","kultgames", "", "versusgamecenter", "", "arenaporto", "", "gameplay", "",
+			"jogonamesa", "", "dracotienda", "", "cultodacaixa", "", "gglounge", "", "diver", "",
+			"juegosdelamesaredonda", "", "planetongames", "", "amazon.es", "", "devir"});
+	}
 
-	private static void toCSV(String name, String host, String price, String stock){
 
+	private static void toData(String name, Double best, String bestHost, Double[] prices, String[] stocks){
+		String[] f = new String[ARRSIZE*2+3];
+		f[0] = name;
+		f[1] = String.valueOf(best);
+		f[2] = bestHost;
+		int j = 0;
+		for (int i = 3; i < ARRSIZE*2+2; i+=2) {
+			f[i] = String.valueOf(prices[j]);
+			f[i+1] = stocks[j];
+			j++;
+		}
+		data.add(f);
+	}
+
+	private static void CSV(){
+		File file = new File("prices.csv");	
+		try {
+  		FileWriter outputfile = new FileWriter(file);
+        CSVWriter writer = new CSVWriter(outputfile);
+  		writer.writeAll(data);
+        writer.close();
+   		}
+    	catch (IOException e) {
+        	e.printStackTrace();
+    	}
 	}
 
 
@@ -265,12 +291,22 @@ public class PriceCheck{
 		f.setReadOnly();
 		BufferedReader in = new BufferedReader(new FileReader(f));
 		String s;
-		String name;
+		String name = "";
+		String bestHost = "";
 		Double best = 5000.0;
+		Double[] prices = new Double[ARRSIZE];
+		String[] stocks = new String[ARRSIZE];
+		initData();
+
   		while ((s = in.readLine()) != null){
   			if(checkNameBg(s)){
+  				if(!(name.equals(""))){
+  					toData(name, best, bestHost, prices, stocks);
+  					prices = new Double[ARRSIZE];
+					stocks = new String[ARRSIZE];
+  				}
   				name = s; 
-  				best = 5000.0;
+  				best = 5000.0;	
   			}  
   			else{
   				Document doc = Jsoup.connect(s).get();
@@ -278,88 +314,98 @@ public class PriceCheck{
 	  			String host = u.getHost();
 	  			String priceS = "";
 	  			Double price = 0.0;
-	  			String stock = "";
 	  			switch (host){
 	  				case "www.kultgames.pt":
 	  					priceS = spanIdPrice(s, doc);
 	  					priceS = priceS.replace(',','.');
 	  					price = Double.parseDouble(priceS);
-	  					stock = kultgamesStock(s, doc);
+	  					prices[0] = price;
+	  					stocks[0] = kultgamesStock(s, doc);
 	  				break;
 
 	  				case "www.versusgamecenter.pt":
 	  					priceS = versusgamecenterPrice(s, doc);
 	  					priceS = priceS.replace(',','.');
 	  					price = Double.parseDouble(priceS);
-	  					stock = versusgamecenterStock(s, doc);
+	  					prices[1] = price;
+	  					stocks[1] = versusgamecenterStock(s, doc);
 	  				break;
 
 	  				case "arenaporto.com":
 	  					priceS = productPriceAmount(s,doc);
 	  					price = Double.parseDouble(priceS);
-	  					stock = spanStock(s,doc);
+	  					prices[2] = prices[2] > price ? price : prices[2];
+	  					stocks[2] = spanStock(s,doc);
 	  					//checar isto BoardGame b = new BoardGame(name, host, stock, price);
 	  					break;
 
 	  				case "gameplay.pt":
 	  					priceS = productPriceAmount(s,doc);
 	  					price = Double.parseDouble(priceS);
-	  					stock = pIdStock(s,doc);
+	  					prices[3] = prices[3] > price ? price : prices[3];
+	  					stocks[3] = pIdStock(s,doc);
 	  				break;
 
 	  				case "jogonamesa.pt":
 	  					priceS = jogonamesaPrice(s, doc);
-	  					stock = jogonamesaStock(s, doc);
+	  					stocks[4] = jogonamesaStock(s, doc);
 	  					price = Double.parseDouble(priceS);
-	  					System.out.println(stock);
+	  					prices[4] = prices[4] > price ? price : prices[4];
 	  				break;
 
 	  				case "dracotienda.com":
 	  					priceS = dracotiendaPrice(s,doc);
 	  					priceS = priceS.replace(',','.');
 	  					price = Double.parseDouble(priceS);
-	  					stock = dracotiendaStock(s,doc);
+	  					prices[5] = prices[5] > price ? price : prices[5];
+	  					stocks[5] = dracotiendaStock(s,doc);
 	  				break;
 
 	  				case "cultodacaixa.pt":
 	  					priceS = pPrice(s,doc);
 	  					priceS = priceS.replace(',','.');
 	  					price = Double.parseDouble(priceS);
-	  					stock = pClassStock(s,doc);
+	  					prices[6] = prices[6] > price ? price : prices[6];
+	  					stocks[6] = pClassStock(s,doc);
 	  				break;
 
 	  				case "gglounge.pt":
 	  					priceS = pPrice(s,doc);
 	  					price = Double.parseDouble(priceS);
-	  					stock = pClassStock(s,doc);
+	  					prices[7] = prices[7] > price ? price : prices[7];
+	  					stocks[7] = pClassStock(s,doc);
 	  				break;
 
 	  				case "www.diver.pt":
 	  					priceS = diverPrice(s,doc);
 	  					priceS = priceS.replace(',','.');
 	  					price = Double.parseDouble(priceS);
-	  					stock = spanIdStock(s,doc);
+	  					prices[8] = prices[8] > price ? price : prices[8];
+	  					stocks[8] = spanIdStock(s,doc);
 	  				break;
 
 	  				case "juegosdelamesaredonda.com":
 	  					priceS = spanIdPrice(s,doc);
 	  					priceS = priceS.replace(',','.');
 	  					price = Double.parseDouble(priceS);
-	  					stock = spanIdStock(s, doc);
+	  					prices[9] = prices[9] > price ? price : prices[9];
+	  					stocks[9] = spanIdStock(s, doc);
 	  				break;
 
 	  				case "www.planetongames.com":
 	  					priceS = spanIdPrice(s,doc);
 	  					priceS = priceS.replace(',','.');
 	  					price = Double.parseDouble(priceS);
-	  					stock = spanIdStock(s, doc);
+	  					prices[10] = prices[10] > price ? price : prices[10];
+	  					stocks[10] = spanIdStock(s, doc);
 	  				break;
 
 	  				case "www.amazon.es":
 	  					priceS = amazonPrice(s,doc);
 	  					priceS = priceS.replace(',','.');
 	  					price = Double.parseDouble(priceS);
-	  					stock = amazonStock(s, doc);
+	  					prices[11] = prices[11] > price ? price : prices[11];
+	  					stocks[11] = amazonStock(s, doc);
 	  				break;
 
 	  				case "devir.pt":
@@ -367,20 +413,20 @@ public class PriceCheck{
 	  					priceS = priceS.replace(',','.');
 	  					price = 2000.0;
 	  					//price = Double.parseDouble(priceS);
-	  					stock = "not implemented yet";
+	  					prices[12] = prices[12] > price ? price : prices[12];
+	  					stocks[12] = "not implemented yet";
 	  					break;
 
 	  				default:
 	  					System.out.println(s + " is invalid.");
 	  			}
-	  			best = (price < best) ? price : best;
-	  			//toCSV(name, host, price, stock);
-	  			System.out.println(host);
-	  			System.out.println(price);
-	  			System.out.println(stock);
-	  			System.out.println();
+	  			if(price < best){
+	  				best = price;
+	  				bestHost = host;
+	  			}
   			}	
   		}
-  		System.out.println(best);
+  		toData(name, best, bestHost, prices, stocks);
+  		CSV();
 	}
 }
