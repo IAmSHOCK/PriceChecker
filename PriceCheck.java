@@ -1,8 +1,6 @@
-import java.io.BufferedReader;  
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.File;
-import java.net.URL;
+import java.io.*;  
+
+import java.net.*;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -10,10 +8,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.opencsv.CSVWriter;
-import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Arrays;
+import java.util.*;
+
 
 
 
@@ -22,7 +18,7 @@ public class PriceCheck{
 	public static List<String[]> data;
 
 	private static Boolean checkNameBg(String s){
-		if(s.charAt(0) == 'h' && s.charAt(2) == 't' && s.charAt(2) == 't') return false;
+		if(s.charAt(0) == 'h' && s.charAt(1) == 't' && s.charAt(2) == 't') return false;
 		return true;
 	}
 
@@ -229,17 +225,22 @@ public class PriceCheck{
 		}	
 		return "Not found.";
 	}
+	private static String read(String url) throws IOException{
+		URL urlObj = new URL(url);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(urlObj .openStream()));
+		String line;
+		StringBuffer sbuf = new StringBuffer();
+
+		while ((line = reader.readLine()) != null) {
+		    if (line.trim().length() > 0)
+		        sbuf.append(line).append("\n");
+		}
+		reader.close();
+		return sbuf.toString();
+	}
 
 	private static String amazonPrice(String s, Document doc){
-		Elements metaTags = doc.getElementsByTag("span");
-		String price;
-		for (Element metaTag : metaTags) {
-		  	String id = metaTag.attr("id");
-		  	if("price_inside_buybox".equals(id)){
-			  	//System.out.println(metaTag);
-		  		return(metaTag.text().substring(0, metaTag.text().length()-2));
-		  	}
-		}	
+		
 		return "Not found.";
 	}
 
@@ -280,18 +281,28 @@ public class PriceCheck{
 	private static void CSV(){
 		File file = new File("prices.csv");	
 		try {
-  		FileWriter outputfile = new FileWriter(file);
-        CSVWriter writer = new CSVWriter(outputfile);
-  		writer.writeAll(data);
-        writer.close();
+	  		FileWriter outputfile = new FileWriter(file);
+	        CSVWriter writer = new CSVWriter(outputfile);
+	  		writer.writeAll(data);
+	        writer.close();
    		}
     	catch (IOException e) {
         	e.printStackTrace();
     	}
 	}
 
-
-	
+	private static void log(Exception e, File file){
+		try {
+	  		FileWriter outputfile = new FileWriter(file);
+	  		StringWriter sw = new StringWriter();
+	  		PrintWriter pw = new PrintWriter(sw);
+	  		e.printStackTrace(pw);
+	        outputfile.write(sw.toString());
+   		}
+    	catch (IOException s) {
+        	s.printStackTrace();
+    	}
+	}
 
 	public static void main(String[] argv) throws IOException{
 		File f = new File(argv[0]);
@@ -304,6 +315,7 @@ public class PriceCheck{
 		Arrays.fill(prices, 5000.0);
 		String[] stocks = new String[ARRSIZE];
 		initData();
+		File l = new File("log.txt");
 
   		while ((s = in.readLine()) != null){
   			if(checkNameBg(s)){
@@ -319,7 +331,16 @@ public class PriceCheck{
   				bestHost = "";
   			}  
   			else{
-  				Document doc = Jsoup.connect(s).get();
+  				Document doc;
+  				try{
+  					doc = Jsoup.connect(s).userAgent("Mozilla/49.0").get();
+  				}
+  				catch(Exception e){
+  					e.printStackTrace();
+  					log(e, l);
+  					doc = null;
+  				}
+
 	  			URL u = new URL(s);
 	  			String host = u.getHost();
 	  			String priceS = "";
@@ -346,7 +367,6 @@ public class PriceCheck{
 	  					price = Double.parseDouble(priceS);
 	  					prices[2] = prices[2] > price ? price : prices[2];
 	  					stocks[2] = spanStock(s,doc);
-	  					//checar isto BoardGame b = new BoardGame(name, host, stock, price);
 	  					break;
 
 	  				case "gameplay.pt":
@@ -360,7 +380,7 @@ public class PriceCheck{
 	  					priceS = jogonamesaPrice(s, doc);
 	  					
 	  					if(priceS.equals("Not found.")){
-	  						prices[4] = 0;
+	  						prices[4] = 0.0;
 	  						stocks[4] = "esgotado";
 	  						price = 5000.0;
 	  					}
@@ -382,7 +402,7 @@ public class PriceCheck{
 	  				case "cultodacaixa.pt":
 	  					priceS = pPrice(s,doc);
 	  					if(priceS.equals("")){
-	  						prices[6] = 0;
+	  						prices[6] = 0.0;
 	  						stocks[6] = "esgotado";
 	  						price = 5000.0;
 	  					}
@@ -426,7 +446,7 @@ public class PriceCheck{
 	  				break;
 
 	  				case "www.amazon.es":
-	  					priceS = amazonPrice(s,doc);
+	  					priceS = amazonPrice(s, doc);
 	  					priceS = priceS.replace(',','.');
 	  					if(priceS.equals("Not found.")){
 	  						prices[11] = 10000.0;
