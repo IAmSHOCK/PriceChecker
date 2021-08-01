@@ -280,6 +280,24 @@ public class PriceCheck{
 
 	private static void CSV(){
 		File file = new File("prices.csv");	
+		if(file.exists()){
+			File old = new File("prices-old.csv");
+			try (
+			      InputStream in = new BufferedInputStream(new FileInputStream(file));
+			      OutputStream out = new BufferedOutputStream(new FileOutputStream(old))
+			    ) 
+			{
+		        byte[] buffer = new byte[1024];
+		        int lengthRead;
+		        while ((lengthRead = in.read(buffer)) > 0) {
+		            out.write(buffer, 0, lengthRead);
+		            out.flush();
+        		}
+			}
+			catch(Exception e){
+				e.printStackTrace();
+			}
+		}
 		try {
 	  		FileWriter outputfile = new FileWriter(file);
 	        CSVWriter writer = new CSVWriter(outputfile);
