@@ -50,10 +50,10 @@ public class PriceCheck{
 	private static String versusgamecenterPrice(String s, Document doc){
 		Elements metaTags = doc.getElementsByTag("span");
 		for (Element metaTag : metaTags) {
-		  	String id = metaTag.attr("id");
-		  	if("price-old".equals(id)){
-		  		metaTag.children().remove();
-		  		return(metaTag.text().substring(0, metaTag.text().length() - 1));
+		  	String id = metaTag.attr("class");
+		  	if("regular-price".equals(id)){
+		  		//metaTag.children().remove();
+		  		return(metaTag.text().substring(0, metaTag.text().length() - 2));
 		  	}
 		}	
 		return "Not found.";
@@ -63,7 +63,7 @@ public class PriceCheck{
 		Elements metaTags = doc.getElementsByTag("div");
 		for (Element metaTag : metaTags) {
 			String id = metaTag.attr("class");
-			if("description".equals(id)){
+			if("availability mb-20".equals(id)){
 		  		return(metaTag.text().substring(metaTag.text().indexOf("Disponibilidade: ")+17, metaTag.text().length()));
 			}
 		}	
@@ -372,7 +372,7 @@ public class PriceCheck{
 	  					stocks[0] = kultgamesStock(s, doc);
 	  				break;
 
-	  				case "www.versusgamecenter.pt":
+	  				case "versusgamecenter.pt":
 	  					priceS = versusgamecenterPrice(s, doc);
 	  					priceS = priceS.replace(',','.');
 	  					price = Double.parseDouble(priceS);
