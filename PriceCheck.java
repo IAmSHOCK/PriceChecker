@@ -163,6 +163,7 @@ public class PriceCheck{
 		}	
 		return "Not found.";
 	}
+
 	
 	private static String pPrice(String s, Document doc){
 		Elements metaTags = doc.getElementsByTag("p");
@@ -171,7 +172,12 @@ public class PriceCheck{
 		  	if("price".equals(id)){
 		  		//metaTag.children().remove();
 		  		if(metaTag.text().equals("")) return "";
-		  		return(metaTag.text().substring(1, metaTag.text().length()));
+		  		String tmp = metaTag.text();
+		  		int i;
+		  		for (i = metaTag.text().length()-1; i > 0 ; i--) {
+		  			if(tmp.charAt(i) == '€') break;
+		  		}
+		  		return(metaTag.text().substring(i+1, metaTag.text().length()));
 		  	}
 		}
 		return "Not found.";
@@ -293,9 +299,12 @@ public class PriceCheck{
 		            out.write(buffer, 0, lengthRead);
 		            out.flush();
         		}
+        		in.close();
+        		out.close();
 			}
 			catch(Exception e){
 				e.printStackTrace();
+				log(e);
 			}
 		}
 		try {
@@ -306,10 +315,12 @@ public class PriceCheck{
    		}
     	catch (IOException e) {
         	e.printStackTrace();
+        	log(e);
     	}
 	}
 
-	private static void log(Exception e, File file){
+	private static void log(Exception e){
+		File file = new File("log.txt");
 		try {
 	  		FileWriter outputfile = new FileWriter(file);
 	  		StringWriter sw = new StringWriter();
@@ -321,9 +332,47 @@ public class PriceCheck{
         	s.printStackTrace();
     	}
 	}
+	private static void checkBestPriceDiff(String name, Double best, String bestHost){
+		try (BufferedReader br = new BufferedReader(new FileReader("prices.csv"))){
+            String line = br.readLine();
+            Double old;
+            File diff = new File("diff.txt");
+            FileWriter myWriter = new FileWriter(diff, true);
+            while (line != null) {
+                String[] attributes = line.split(",");
+                //System.out.println(attributes[0] + " " + attributes[0].equals(name) + " " + name);
+                if(!attributes[0].equals("") &&  !attributes[1].equals("") &&  !attributes[2].equals("") && attributes[0].equals(name) && best < (old = Double.parseDouble(attributes[1])))
+                {
+                	StringBuilder h = new StringBuilder(name);
+                	h.append(" has a new best: ");
+                	h.append(best);
+                	h.append(" from ");
+                	h.append(bestHost);
+                	h.append(" was ");
+                	h.append(old);
+                	h.append(" from ");
+                	h.append(attributes[2]);
+                	h.append(".");
+                	myWriter.write(h.toString());
+                	System.out.println(h.toString());
+                	return;
+                }	
+                line = br.readLine();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            log(e);
+        }
+	}
+
 
 	public static void main(String[] argv) throws IOException{
 		File f = new File(argv[0]);
+		File diff = new File("diff.txt");
+        if (diff.exists()) {
+            diff.delete();
+        }
 		BufferedReader in = new BufferedReader(new FileReader(f));
 		String s;
 		String name = "";
@@ -333,18 +382,18 @@ public class PriceCheck{
 		Arrays.fill(prices, 5000.0);
 		String[] stocks = new String[ARRSIZE];
 		initData();
-		File l = new File("log.txt");
-
+		
   		while ((s = in.readLine()) != null){
   			if(checkNameBg(s)){
   				if(!(name.equals(""))){
+  					checkBestPriceDiff(name, best, bestHost);
   					toData(name, best, bestHost, prices, stocks);
   					prices = new Double[ARRSIZE];
 					Arrays.fill(prices, 5000.0);
 					stocks = new String[ARRSIZE];
   				}
-  				System.out.println(name);
   				name = s; 
+  				System.out.println(name);
   				best = 5000.0;	
   				bestHost = "";
   			}  
@@ -355,7 +404,7 @@ public class PriceCheck{
   				}
   				catch(Exception e){
   					e.printStackTrace();
-  					log(e, l);
+  					log(e);
   					doc = null;
   				}
 
@@ -497,6 +546,7 @@ public class PriceCheck{
 	  			System.out.println(price);
   			}	
   		}
+  		checkBestPriceDiff(name, best, bestHost);
   		toData(name, best, bestHost, prices, stocks);
   		CSV();
 	}
