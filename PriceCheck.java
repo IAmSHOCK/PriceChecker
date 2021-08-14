@@ -333,11 +333,14 @@ public class PriceCheck{
     	}
 	}
 	private static void checkBestPriceDiff(String name, Double best, String bestHost){
-		try (BufferedReader br = new BufferedReader(new FileReader("prices.csv"))){
+
+		try (BufferedReader br = new BufferedReader(new FileReader("prices.csv"));
+			FileWriter fw = new FileWriter("diff.txt", true);
+			BufferedWriter bw = new BufferedWriter(fw);
+			PrintWriter out = new PrintWriter(bw))
+		{
             String line = br.readLine();
             Double old;
-            File diff = new File("diff.txt");
-            FileWriter myWriter = new FileWriter(diff, true);
             while (line != null) {
                 String[] attributes = line.split(",");
                 //System.out.println(attributes[0] + " " + attributes[0].equals(name) + " " + name);
@@ -353,7 +356,8 @@ public class PriceCheck{
                 	h.append(" from ");
                 	h.append(attributes[2]);
                 	h.append(".");
-                	myWriter.write(h.toString());
+                	out.println(h.toString());
+                	out.println();
                 	System.out.println(h.toString());
                 	return;
                 }	
@@ -361,6 +365,16 @@ public class PriceCheck{
             }
 
         } catch (IOException e) {
+            e.printStackTrace();
+            log(e);
+        }
+	}
+
+	public static void deleteDiff(){
+		try(PrintWriter writer = new PrintWriter("diff.txt")){
+			writer.print("");
+			writer.close();
+		} catch (IOException e) {
             e.printStackTrace();
             log(e);
         }
@@ -382,7 +396,7 @@ public class PriceCheck{
 		Arrays.fill(prices, 5000.0);
 		String[] stocks = new String[ARRSIZE];
 		initData();
-		
+		deleteDiff();
   		while ((s = in.readLine()) != null){
   			if(checkNameBg(s)){
   				if(!(name.equals(""))){
