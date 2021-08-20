@@ -1,13 +1,14 @@
 import java.io.*;  
 import java.net.*;
+import java.util.*;
 
+import java.util.concurrent.TimeUnit;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.opencsv.CSVWriter;
-import java.util.*;
 
 
 
@@ -230,6 +231,19 @@ public class PriceCheck{
 		}	
 		return "Not found.";
 	}
+
+	private static String planetongamesPrice(String s, Document doc){
+			Elements metaTags = doc.getElementsByTag("span");
+			for (Element metaTag : metaTags) {
+				String id = metaTag.attr("itemprop");
+				//String price = metaTag.attr("content");
+				if("price".equals(id)){
+			  		return(metaTag.text().substring(0, metaTag.text().length()-2));
+				}
+			}	
+			return "Not found.";
+		}
+
 	private static String read(String url) throws IOException{
 		URL urlObj = new URL(url);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(urlObj .openStream()));
@@ -319,9 +333,8 @@ public class PriceCheck{
 	}
 
 	private static void log(Exception e){
-		File file = new File("log.txt");
 		try {
-	  		FileWriter outputfile = new FileWriter(file);
+	  		FileWriter outputfile = new FileWriter("log.txt", true);
 	  		StringWriter sw = new StringWriter();
 	  		PrintWriter pw = new PrintWriter(sw);
 	  		e.printStackTrace(pw);
@@ -368,6 +381,14 @@ public class PriceCheck{
             log(e);
         }
 	}
+	public static void deletelog(){
+		try(PrintWriter writer = new PrintWriter("log.txt")){
+			writer.print("");
+			writer.close();
+		} catch (IOException e) {
+            e.printStackTrace();
+        }
+	}
 
 	public static void deleteDiff(){
 		try(PrintWriter writer = new PrintWriter("diff.txt")){
@@ -394,6 +415,7 @@ public class PriceCheck{
 		Double[] prices = new Double[ARRSIZE];
 		Arrays.fill(prices, 5000.0);
 		String[] stocks = new String[ARRSIZE];
+		deletelog();
 		initData();
 		deleteDiff();
   		while ((s = in.readLine()) != null){
@@ -421,10 +443,30 @@ public class PriceCheck{
   					doc = null;
   				}
 
+  				if(doc == null){
+  					try{
+  						TimeUnit.SECONDS.sleep(2);
+  					}
+  					catch(Exception e){
+  						e.printStackTrace();
+	  					log(e);
+  					}
+  					
+  					try{
+  						doc = Jsoup.connect(s).userAgent("Mozilla/49.0").get();
+	  				}
+	  				catch(Exception e){
+	  					e.printStackTrace();
+	  					log(e);
+	  					break;
+	  				}
+  				}
+
 	  			URL u = new URL(s);
 	  			String host = u.getHost();
 	  			String priceS = "";
 	  			Double price = 0.0;
+	  			
 	  			switch (host){
 	  				case "www.kultgames.pt":
 	  					priceS = spanIdPrice(s, doc);
@@ -518,11 +560,12 @@ public class PriceCheck{
 	  				break;
 
 	  				case "www.planetongames.com":
-	  					priceS = spanIdPrice(s,doc);
+	  					priceS = planetongamesPrice(s,doc);
 	  					priceS = priceS.replace(',','.');
 	  					price = Double.parseDouble(priceS);
 	  					prices[10] = prices[10] > price ? price : prices[10];
 	  					stocks[10] = spanIdStock(s, doc);
+
 	  				break;
 
 	  				case "www.amazon.es":
